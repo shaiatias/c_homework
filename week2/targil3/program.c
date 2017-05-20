@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-void getMaxConsecutiveNumbers(int origin[], int originLen, int *resultArr[], int *resultLen);
+void getMaxConsecutiveNumbers(int origin[], int originLen);
 
 int getMax(int a, int b);
 
@@ -12,17 +12,10 @@ int main(){
     int origin[] = {2, 8, -29, 19, 4};
     int originLen = sizeof(origin) / sizeof(origin[0]);
 
-    int *result;
-    int *resultLen;
-
-    getMaxConsecutiveNumbers(origin, originLen, result, resultLen);
-
-    for (int i = 0; i < resultLen; i++) {
-        printf("%d ,", result[i]);
-    }
+    getMaxConsecutiveNumbers(origin, originLen);
 }
 
-void getMaxConsecutiveNumbers(int origin[], int originLen, int* resultArr[], int* resultLen) {
+void getMaxConsecutiveNumbers(int origin[], int originLen) {
 
     int temp[originLen];
 
@@ -43,10 +36,8 @@ void getMaxConsecutiveNumbers(int origin[], int originLen, int* resultArr[], int
         countItems++;
     }
 
-    resultArr[countItems];
-
     for (int i = 0; i < countItems; i++) {
-        resultArr[i] = origin[i + 1 + indexOfMax - countItems];
+        printf("%d ", (origin[i + 1 + indexOfMax - countItems]));
     }
 }
 
