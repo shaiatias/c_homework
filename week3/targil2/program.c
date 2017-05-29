@@ -3,7 +3,7 @@
 
 void printBinary(int num, int size){
 
-    unsigned int mask = (unsigned int) (1 << size);
+    int mask = (1 << (size*2 - 1));
 
     while (mask > 0) {
 
@@ -17,8 +17,6 @@ void printBinary(int num, int size){
 
         mask = mask >> 1;
     }
-
-//    printf("\n");
 }
 
 int rotateNum(int num, unsigned int rotate){
@@ -47,21 +45,36 @@ void chunckString(char str[9], unsigned int s1ize) {
 
         short t = digit & 15;
 
-        printBinary(t, 3);
-        printf(" ");
+        printBinary(t, sizeof(short));
     }
 }
 
 int main(){
 
-//    printBinary(0, 8);
-//    printBinary(10);
-//    printBinary(8);
-//    printBinary(-128);
+    printf("2.1 print binary: 0, 10, 8, -128\n");
 
-//    int result = rotateNum(100, 3);
-//    printBinary(100);
-//    printBinary(result);
+    printBinary(0, sizeof(int));
+    printf("\n");
 
+    printBinary(10, sizeof(int));
+    printf("\n");
+
+    printBinary(8, sizeof(int));
+    printf("\n");
+
+    printBinary(-128, sizeof(int));
+
+    printf("\n\n");
+
+    printf("2.2 rotate 100 by 3 gives\n");
+
+    int result = rotateNum(100, 3);
+    printBinary(100, sizeof(int));
+    printf(" => ");
+    printBinary(result, sizeof(int));
+
+    printf("\n\n");
+
+    printf("2.3 chunk the string 12345678 gives\n");
     chunckString("12345678", 9);
 }
