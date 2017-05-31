@@ -35,9 +35,7 @@ int rotateNum(int num, unsigned int rotate){
     return temp;
 }
 
-void chunckString(char str[9], unsigned int s1ize) {
-
-    int size = sizeof(str) / sizeof(str[0]);
+void chunkString(char str[], unsigned int size) {
 
     for (int i = 0; i < size; ++i) {
 
@@ -76,5 +74,5 @@ int main(){
     printf("\n\n");
 
     printf("2.3 chunk the string 12345678 gives\n");
-    chunckString("12345678", 9);
+    chunkString("12345678", 9);
 }

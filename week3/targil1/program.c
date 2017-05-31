@@ -1,89 +1,90 @@
-
-#include <unistd.h>
 #include <stdio.h>
-#include <w32api/synchapi.h>
 
-void playGameOfLife(char board[5][5], int size, int turns);
+#define MAXROW 10
+#define MAXCOL 10
+#define MAXGEN 10
 
-void printBoard(char board[5][5], int size);
+typedef enum {
+    DEAD, ALIVE
+} State;
 
-void doNextTurn(char board[5][5], int size);
+typedef enum {
+    TRUE, FALSE
+} Boolean;
 
-void doSleep(int milis);
 
-int countNeighbours(char board[5][5], int size, int i, int j);
+typedef State Grid[MAXROW + 2][MAXCOL + 2][MAXGEN];
+
+void playGameOfLife(Grid board, int rows, int columns, int turns);
+
+void printBoard(Grid board, int rows, int columns, int atTurn);
+
+void doNextTurn(Grid board, int previousTurn, int rows, int columns);
+
+int countNeighbours(Grid board, int turn, int rows, int columns, int i, int j);
+
+void printResults(Grid board, int boardsCount, int rows, int columns);
+
+int getInt(char message[]);
+
+Boolean fillTheBoard(Grid board, int rows, int cols);
+
+Boolean checkCellValue(int value);
+
+Boolean checkBoardValues(int rows, int cols, int generations);
 
 int main() {
 
-    char board[5][5] = {
-            {'0', '0', '0', '0', '0'},
-            {'0', '0', '1', '1', '0'},
-            {'0', '0', '1', '0', '0'},
-            {'0', '0', '1', '0', '0'},
-            {'0', '0', '0', '0', '0'}
-    };
+    Grid board = {0};
 
-    playGameOfLife(board, 5, 15);
+    int rows = getInt("Enter Rows: ");
+    int cols = getInt("Enter Columns: ");
+    int turns = getInt("Enter Turns: ");
+
+    if (checkBoardValues(rows, cols, turns) == FALSE)
+        return 1;
+
+    if (fillTheBoard(board, rows, cols) == FALSE)
+        return 2;
+
+    playGameOfLife(board, rows, cols, turns);
+
+    return 0;
 }
 
-void playGameOfLife(char board[5][5], int size, int turns) {
-
-    printBoard(board, size);
-
+void playGameOfLife(Grid board, int rows, int columns, int turns) {
 
     for (int k = 0; k < turns; ++k) {
-
-        printf("\n");
-
-        doNextTurn(board, size);
-        printBoard(board, size);
-        doSleep(100);
-    }
-}
-
-void doSleep(int milis) {
-
-#ifdef WIN32
-    Sleep(milis);
-#else
-    usleep(milis * 1000);
-#endif
-}
-
-void doNextTurn(char board[5][5], int size) {
-
-    char tempBoard[size][size];
-
-    // copy the board to temp
-    for (int i = 0; i < size; ++i) {
-
-        for (int j = 0; j < size; ++j) {
-            tempBoard[i][j] = board[i][j];
-        }
+        doNextTurn(board, k, rows, columns);
     }
 
-    for (int i = 0; i < size; ++i) {
+    printResults(board, turns, rows, columns);
+}
 
-        for (int j = 0; j < size; ++j) {
+void doNextTurn(Grid board, int previousTurn, int rows, int columns) {
 
-            int count = countNeighbours(tempBoard, size, i, j);
-            int self = (tempBoard[i][j] == '1' ? 1 : 0);
+    for (int i = 0; i < rows; ++i) {
+
+        for (int j = 0; j < columns; ++j) {
+
+            int count = countNeighbours(board, previousTurn, rows, columns, i, j);
+            int self = (board[i][j][previousTurn] == ALIVE ? 1 : 0);
 
             if (self == 0) {
 
                 if (count == 3) {
-                    board[i][j] = '1';
+                    board[i][j][previousTurn+1] = ALIVE;
                 } else {
-                    board[i][j] = '0';
+                    board[i][j][previousTurn+1] = DEAD;
                 }
             }
 
             else {
 
                 if (count == 3 || count == 2) {
-                    board[i][j] = '1';
+                    board[i][j][previousTurn+1] = ALIVE;
                 } else {
-                    board[i][j] = '0';
+                    board[i][j][previousTurn+1] = DEAD;
                 }
             }
 
@@ -91,67 +92,143 @@ void doNextTurn(char board[5][5], int size) {
     }
 }
 
-int countNeighbours(char board[5][5], int size, int i, int j) {
+int countNeighbours(Grid board, int turn, int rows, int columns, int i, int j) {
 
     int count = 0;
 
     // up
 
     if (i > 0 && j > 0){
-        char temp1 = board[i-1][j-1];
-        if (temp1 == '1') count++;
+        State temp1 = board[i-1][j-1][turn];
+        if (temp1 == ALIVE) count++;
     }
 
     if (i > 0) {
-        char temp2 = board[i - 1][j];
-        if (temp2 == '1') count++;
+        State temp2 = board[i - 1][j][turn];
+        if (temp2 == ALIVE) count++;
     }
 
-    if (i > 0 && j < (size - 1)) {
-        char temp3 = board[i - 1][j + 1];
-        if (temp3 == '1') count++;
+    if (i > 0 && j < (columns - 1)) {
+        State temp3 = board[i - 1][j + 1][turn];
+        if (temp3 == ALIVE) count++;
     }
 
     // center
 
     if (j > 0) {
-        char temp4 = board[i][j - 1];
-        if (temp4 == '1') count++;
+        State temp4 = board[i][j - 1][turn];
+        if (temp4 == ALIVE) count++;
     }
 
-    if (j < (size - 1)) {
-        char temp5 = board[i][j + 1];
-        if (temp5 == '1') count++;
+    if (j < (columns - 1)) {
+        State temp5 = board[i][j + 1][turn];
+        if (temp5 == ALIVE) count++;
     }
 
     // bottom
 
-    if (i < (size - 1) && j > 0) {
-        char temp6 = board[i + 1][j - 1];
-        if (temp6 == '1') count++;
+    if (i < (rows - 1) && j > 0) {
+        State temp6 = board[i + 1][j - 1][turn];
+        if (temp6 == ALIVE) count++;
     }
 
-    if (i < (size - 1)) {
-        char temp7 = board[i + 1][j];
-        if (temp7 == '1') count++;
+    if (i < (rows - 1)) {
+        State temp7 = board[i + 1][j][turn];
+        if (temp7 == ALIVE) count++;
     }
 
-    if (i < (size - 1) && j < (size - 1)) {
-        char temp8 = board[i + 1][j + 1];
-        if (temp8 == '1') count++;
+    if (i < (rows - 1) && j < (columns - 1)) {
+        State temp8 = board[i + 1][j + 1][turn];
+        if (temp8 == ALIVE) count++;
     }
 
     return count;
 }
 
-void printBoard(char board[5][5], int size) {
+void printBoard(Grid board, int rows, int columns, int atTurn) {
 
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < rows; ++i) {
 
-        for (int j = 0; j < size; ++j) {
-            printf("%c ", board[i][j]);
+        for (int j = 0; j < columns; ++j) {
+            State temp = board[i][j][atTurn];
+            printf("%c ", (temp == ALIVE ? '1' : '0'));
         }
 
         printf("\n");
     }
+}
+
+void printResults(Grid board, int boardsCount, int rows, int columns) {
+
+    for (int i = 0; i < boardsCount; ++i) {
+        printf("Generation %d:\n", i);
+        printBoard(board, rows, columns, i);
+
+        printf("\n");
+    }
+}
+
+int getInt(char message[]) {
+
+    int value;
+
+    printf("%s", message);
+
+    if (scanf("%d", &value) != 1) {
+        fprintf(stderr, "ERROR: Entered value must be numeric.\n");
+        return -1;
+    }
+    return value;
+}
+
+Boolean fillTheBoard(Grid board, int rows, int cols) {
+    State cellState;
+    int value;
+    for (int row = 1; row <= rows; ++row) {
+        for (int col = 1; col <= cols; ++col) {
+            value = getInt("Enter cell: ");
+            if (checkCellValue(value)) {
+                if (value == 1) {
+                    cellState = ALIVE;
+                } else {
+                    cellState = DEAD;
+                }
+                board[row][col][0] = cellState;
+            } else {
+                fprintf(stderr, "ERROR: Invalid cell value entered (0|1).");
+                return FALSE;
+            }
+        }
+    }
+    return TRUE;
+}
+
+Boolean checkCellValue(int value) {
+    if (value != 0 || value != 1)
+        return FALSE;
+    return TRUE;
+}
+
+Boolean checkBoardValues(int rows, int cols, int generations) {
+    if (rows < 0 || cols < 0 || generations < 0) {
+        fprintf(stderr, "ERROR: Rows/Columns/Generations has to be positive number.\n");
+        return FALSE;
+    }
+
+    if (rows > MAXROW) {
+        fprintf(stderr, "ERROR: Rows maximum is %d .\n", MAXROW);
+        return FALSE;
+    }
+    if (rows > MAXCOL) {
+        fprintf(stderr, "ERROR: Columns maximum is %d .\n", MAXCOL);
+        return FALSE;
+    }
+
+    if (rows > MAXGEN) {
+        fprintf(stderr, "ERROR: Generations maximum is %d .\n", MAXGEN);
+        return FALSE;
+    }
+
+    return TRUE;
+
 }
