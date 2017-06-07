@@ -1,0 +1,2 @@
+
+void transpose(int **intArrs);
