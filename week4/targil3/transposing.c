@@ -13,7 +13,7 @@ void transpose(int **intArrs) {
     for (int i = 0; i < arr_count; ++i) {
 
         for (int j = 0; j < maxFirstValue; ++j) {
-            *(*(arrs + i) +  j) =  *(*(intArrs + j) + i);
+            arrs[i*maxFirstValue +j] =  *(*(intArrs + j) + i);
         }
     }
 }
