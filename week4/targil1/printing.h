@@ -1,0 +1,2 @@
+
+void printAllStrings(char ***allStrings);

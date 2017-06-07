@@ -1,0 +1,2 @@
+
+char *maxLengthString(char ***allStrings);
