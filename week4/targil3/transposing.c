@@ -7,7 +7,6 @@ int getMaxFirstValue(int **intArrs) ;
 int countArray(int **arrs) ;
 
 void transpose(int **int_arrs) {
-
     int max_first_value;
     max_first_value = getMaxFirstValue(int_arrs);
     int arr_count = countArray(int_arrs);
