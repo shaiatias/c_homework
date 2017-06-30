@@ -38,7 +38,9 @@ void main(){
     lr->chr = 'o';
     r->chr = 'e';
 
-    getSL(root);
+    Symbol* result = getSL(root);
+
+    int i = 1;
 }
 
 
@@ -46,11 +48,11 @@ Symbol *getSL(HNode *root) {
 
     int count = countNodesInTree(root);
 
-    Symbol *list = malloc(sizeof(Symbol) * count);
+    Symbol *list = (Symbol*) malloc(sizeof(Symbol) * count);
 
-//    for (int i = 0; i < count; ++i) {
-//        list[i] = NULL;
-//    }
+    for (int i = 0; i < count; ++i) {
+        list[i].chr = '\0';
+    }
 
     chainNodes(root, &list);
 
@@ -73,14 +75,10 @@ void cbCounter(HNode *root, void* counter, Symbol* s) {
 void cbAdder(HNode *root, void* chain, Symbol* s) {
 
     Symbol** symbols = (Symbol**) chain;
-    int i = 0;
-
-    while (*(symbols+i) != NULL) {
-        i++;
-    }
+    static int i = 0;
 
     symbols[i] = s;
-
+    i++;
 }
 
 void chainNodes(HNode *root, Symbol** symbols) {
