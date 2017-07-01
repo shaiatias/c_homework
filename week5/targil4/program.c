@@ -3,15 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-Symbol* getSL(HNode *root);
+Symbol **getSL(HNode *root);
 
 int countNodesInTree(HNode *root);
 void cbCounter(HNode *root, void*, Symbol* s);
 
-void chainNodes(HNode *root, Symbol** symbols);
+void chainNodes(HNode *root, Symbol*** symbols);
 void cbAdder(HNode *root, void*, Symbol* s);
 
 void traverseTree(HNode* root, void (*cb)(HNode*, void*, Symbol* s), void* additional, int depth);
+
+void printSymbols(Symbol **arr);
 
 void main(){
 
@@ -38,28 +40,31 @@ void main(){
     lr->chr = 'o';
     r->chr = 'e';
 
-    Symbol* result = getSL(root);
+    Symbol** result = getSL(root);
 
-    int i = 1;
+    printSymbols(result);
 }
 
+void printSymbols(Symbol **arr) {
 
-Symbol *getSL(HNode *root) {
+    printf("RESULT:\n");
+
+    for (int i = 0; *(arr + i) != NULL; i++) {
+        Symbol s = ((Symbol) **(arr + i));
+        printf("%c:\t%d\n", s.chr, s.counter);
+    }
+}
+
+Symbol **getSL(HNode *root) {
 
     int count = countNodesInTree(root);
 
-    Symbol *list = (Symbol*) malloc(sizeof(Symbol) * count);
-
-    for (int i = 0; i < count; ++i) {
-        list[i].chr = '\0';
-    }
+    Symbol **list = (Symbol**) malloc(sizeof(Symbol) * count);
 
     chainNodes(root, &list);
 
     return list;
 }
-
-
 
 int countNodesInTree(HNode *root) {
     int count = 0;
@@ -74,14 +79,14 @@ void cbCounter(HNode *root, void* counter, Symbol* s) {
 
 void cbAdder(HNode *root, void* chain, Symbol* s) {
 
-    Symbol** symbols = (Symbol**) chain;
+    Symbol*** symbols = (Symbol***) chain;
     static int i = 0;
 
-    symbols[i] = s;
+    *(*(symbols)+i) = s;
     i++;
 }
 
-void chainNodes(HNode *root, Symbol** symbols) {
+void chainNodes(HNode *root, Symbol*** symbols) {
     traverseTree(root, cbAdder, symbols, 0);
 }
 
