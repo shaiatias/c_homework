@@ -1,14 +1,20 @@
 
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <memory.h>
 
-int readGzip(FILE *f);
+int readGzip(char* filename);
 
-int readGzip(FILE *f) {
+int readGzip(char* filename) {
+
+    FILE *f = fopen(filename, "rb+");
+
+    if (errno != 0){
+        printf("Error: %d (%s)\n", errno, strerror(errno));
+        return errno;
+    }
 
     // is valid
     char ID1, ID2;
@@ -78,21 +84,11 @@ int readGzip(FILE *f) {
         printf("the original filename is: %s\n", name);
     }
 
+    fclose(f);
+
     return 0;
 }
 
 int main(){
-
-    FILE *f = fopen("c:\\temp\\a.gz", "rb+");
-
-    if (errno != 0){
-        printf("Error: %d (%s)\n", errno, strerror(errno));
-        return errno;
-    }
-
-    int error = readGzip(f);
-
-    fclose(f);
-
-    return error;
+    return readGzip("c:\\temp\\a.gz");
 }
