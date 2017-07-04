@@ -41,6 +41,7 @@ bool isPreOrder(int *list, int start, int end) {
 
 int main(){
 
-    int a[7] = {10, 7, 3, 9, 8, 20, 25};
-    printf("%d", isPreOrder(a, 0, 6));
+    //int a[7] = {10, 7, 3, 9, 8, 20, 25};
+    int a[5] = {45,25,15,35,75};
+    printf("%d", isPreOrder(a, 0, 4));
 }
