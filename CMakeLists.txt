@@ -4,6 +4,6 @@ project(c_1)
 set(CMAKE_C_STANDARD 99)
 
 set(SOURCE_FILES
-        week5/gzip.c)
+        exams/2016B/ispreorder.c)
 
 add_executable(c_1 ${SOURCE_FILES})
