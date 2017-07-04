@@ -44,7 +44,8 @@ void writeIntersection(FILE *f1, FILE *f2) {
 
         if (f1int == f2int) {
 
-            fprintf(fresult, "%d, ", f1int);
+            fwrite(&f1int, sizeof(int), 1, fresult);
+//            fprintf(fresult, "%d, ", f1int);
 
             if (!fread(&f1int, sizeof(int), 1, f1)) {
                 break;
