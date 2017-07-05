@@ -9,48 +9,44 @@ typedef struct TNode {
 
 TNode *generateTree(char **firstChar) {
 
-    TNode *root = malloc(sizeof(TNode));
-    root->right = NULL;
-    root->left = NULL;
-
-    if (**firstChar != ',' && **firstChar != ')' && **firstChar != '(') {
-        root->info = **firstChar;
-    } else {
+    if (**(firstChar) == '(' || **(firstChar) == ',' || **(firstChar) == ')') {
         return NULL;
     }
 
-    if (*(*(firstChar) + 1) == '(') {
+    TNode *root = malloc(sizeof(TNode));
 
-        *(firstChar) = &*(*(firstChar) + 2);
+    root->right = NULL;
+    root->left = NULL;
+    root->info = **firstChar;
 
-        if (**firstChar == ',') {
-//            *(firstChar) = &*(*(firstChar) + 1);
-        }
+    *(firstChar) = &*(*(firstChar) + 1);
 
-        else {
-            root->left = generateTree(firstChar);
-//            *(firstChar) = &*(*(firstChar) + 1);
-        }
-    }
-
-    if (**firstChar == ')'){
+    if (**(firstChar) == ',' || **(firstChar) == ')') {
         return root;
     }
 
-    else {
+    if (**firstChar != ',') {
         *(firstChar) = &*(*(firstChar) + 1);
+        root->left = generateTree(firstChar);
+    }
+
+    *(firstChar) = &*(*(firstChar) + 1);
+
+    if (**(firstChar) != ')') {
         root->right = generateTree(firstChar);
     }
+
+    *(firstChar) = &*(*(firstChar) + 1);
 
     return root;
 }
 
 int main() {
 
-//    char *text = "a(b,c)";    // OK
-//    char *text = "a(,c)";     // OK
-    char *text = "a";           // FAILED
-//    char *text = "a(b(c,))";
+//    char *text = "a(b,c)";          // OK
+//    char *text = "a(,c)";         // OK
+    char *text = "a";             // FAILED
+//    char *text = "a(b(c,))";        // FAILED
     TNode *root = generateTree(&text);
 
     printf("%c", root->info);
