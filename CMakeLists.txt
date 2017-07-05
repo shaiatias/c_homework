@@ -4,6 +4,6 @@ project(c_1)
 set(CMAKE_C_STANDARD 99)
 
 set(SOURCE_FILES
-        exams/2016BB/calcfreq.c)
+        exams/2015A/gsubarray.c)
 
 add_executable(c_1 ${SOURCE_FILES})

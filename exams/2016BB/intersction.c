@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <errno.h>
+#include <memory.h>
 
-void writeMerged(FILE **f);
+int writeMerged(FILE **f);
 
 int main() {
 
@@ -26,20 +28,44 @@ int main() {
     /////
 
     f1 = fopen("c:\\temp\\file1.bin", "rb+");
+
+    if (errno != 0){
+        printf("Error: %d (%s)\n", errno, strerror(errno));
+        return errno;
+    }
+
     f2 = fopen("c:\\temp\\file2.bin", "rb+");
+
+    if (errno != 0){
+        printf("Error: %d (%s)\n", errno, strerror(errno));
+        return errno;
+    }
+
     f3 = fopen("c:\\temp\\file3.bin", "rb+");
+
+    if (errno != 0){
+        printf("Error: %d (%s)\n", errno, strerror(errno));
+        return errno;
+    }
 
     FILE *f[] = { f1, f2, f3, NULL };
 
-    writeMerged(f);
+    int result = writeMerged(f);
 
     fclose(f1);
     fclose(f2);
     fclose(f3);
+
+    return result;
 }
 
-void writeMerged(FILE **f) {
+int writeMerged(FILE **f) {
     FILE *fresult = fopen("c:\\temp\\intersection.txt", "w");
+
+    if (errno != 0){
+        printf("Error: %d (%s)\n", errno, strerror(errno));
+        return errno;
+    }
 
     int size = 0;
 
@@ -89,4 +115,6 @@ void writeMerged(FILE **f) {
     }
 
     fclose(fresult);
+
+    return 0;
 }
